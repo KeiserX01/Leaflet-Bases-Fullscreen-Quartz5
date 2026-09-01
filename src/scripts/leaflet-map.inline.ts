@@ -124,8 +124,8 @@ async function loadDependencies(): Promise<void> {
     if (!hasFullscreenControl) {
         try {
             await loadCss([
-                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.css",
-                "https://unpkg.com/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.css",
+                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.css",
+                "https://unpkg.com/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.css",
             ]);
         } catch (err) {
             console.error("[leaflet-map] Failed to load leaflet.fullscreen CSS:", err);
@@ -133,8 +133,8 @@ async function loadDependencies(): Promise<void> {
         }
         try {
             await loadScript([
-                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.js",
-                "https://unpkg.com/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.js",
+                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.js",
+                "https://unpkg.com/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.js",
             ]);
         } catch (err) {
             console.error("[leaflet-map] Failed to load leaflet.fullscreen JS:", err);
