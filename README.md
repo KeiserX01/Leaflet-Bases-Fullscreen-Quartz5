@@ -14,14 +14,14 @@ A live demo can be found [here](https://requiae.github.io/quartz-leaflet-map-plu
 Install using the quartz plugin API:
 
 ```bash
-npx quartz plugin add github:Requiae/quartz-leaflet-bases-plugin
+npx quartz plugin add github:KeiserX01/Leaflet-Bases-Fullscreen-Quartz5
 ```
 
 Or add the plugin to the `plugins` list in your `quartz.config.yaml`:
 
 ```yaml
 plugins:
-    - source: github:requiae/quartz-leaflet-bases-plugin
+    - source: github:KeiserX01/Leaflet-Bases-Fullscreen-Quartz5
       enabled: true
       options:
           enableCopyTool: true
