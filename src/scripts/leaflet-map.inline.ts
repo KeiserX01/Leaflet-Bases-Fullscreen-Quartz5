@@ -111,16 +111,16 @@ async function loadDependencies(): Promise<void> {
             "https://code.iconify.design/iconify-icon/3.0.2/iconify-icon.min.js",
         ]);
     }
-    // Leaflet.fullscreen attaches L.control.fullscreen onto the global L namespace.
-    // We must check AFTER Leaflet is loaded above, otherwise the property access
-    // would throw a ReferenceError. We also avoid optional chaining on `L` itself
-    // to stay safe even if the bundler minifies this into a single expression.
+    // Leaflet.fullscreen v5.x exposes the control as `L.Control.FullScreen` (a
+    // class), not as a `L.control.fullscreen` factory. We must check AFTER
+    // Leaflet is loaded above, otherwise the property access would throw a
+    // ReferenceError. We also avoid optional chaining on `L` itself to stay
+    // safe even if the bundler minifies this into a single expression.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const leafletGlobal = (window as any).L as typeof L | undefined;
     const hasFullscreenControl =
         !!leafletGlobal &&
-        !!leafletGlobal.control &&
-        typeof (leafletGlobal.control as { fullscreen?: unknown }).fullscreen !== "undefined";
+        !!(leafletGlobal.Control as { FullScreen?: unknown } | undefined)?.FullScreen;
     if (!hasFullscreenControl) {
         try {
             await loadCss([
@@ -132,9 +132,14 @@ async function loadDependencies(): Promise<void> {
             throw err;
         }
         try {
+            // NOTE: v5.x of leaflet.fullscreen ships two bundles. The .js file is
+            // an ES module (imports `leaflet` as a module), so loading it as a
+            // plain <script> does NOT expose `L.Control.FullScreen` as a global.
+            // The .umd.js bundle is the one that registers itself onto the
+            // global `L` namespace when loaded as a <script>.
             await loadScript([
-                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.js",
-                "https://unpkg.com/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.js",
+                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.umd.js",
+                "https://unpkg.com/leaflet.fullscreen@5.3.3/dist/Control.FullScreen.umd.js",
             ]);
         } catch (err) {
             console.error("[leaflet-map] Failed to load leaflet.fullscreen JS:", err);
@@ -652,18 +657,23 @@ async function initialiseMap(
 
     if (dataset.enableFullscreenTool === "true") {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const leafletWithFullscreen = L as typeof L & {
-            control?: { fullscreen?: (opts?: unknown) => L.Control };
+        const leafletGlobal = L as typeof L & {
+            Control?: { FullScreen?: new (opts?: unknown) => L.Control };
         };
-        if (typeof leafletWithFullscreen.control?.fullscreen === "function") {
-            leafletWithFullscreen.control
-                .fullscreen({
-                    position: "topright",
-                    pseudoFullscreen: true,
-                    title: "Full screen",
-                    titleCancel: "Exit full screen",
-                })
-                .addTo(mapItem);
+        const FullScreenCtor = leafletGlobal.Control?.FullScreen;
+        if (typeof FullScreenCtor === "function") {
+            // v5.x API: `new L.Control.FullScreen(options)` + `map.addControl(...)`.
+            // We pass `forceSeparateButton: true` because the map already has the
+            // PanControl/MeasureControl/CopyControl container at topleft — without
+            // this option, leaflet.fullscreen would try to attach to that zoom-like
+            // container, which either breaks layout or places the button in a
+            // hidden spot.
+            new FullScreenCtor({
+                position: "topright",
+                forceSeparateButton: true,
+                title: "Full screen",
+                titleCancel: "Exit full screen",
+            }).addTo(mapItem);
         }
     }
 
