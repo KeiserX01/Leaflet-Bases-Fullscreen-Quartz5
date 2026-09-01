@@ -55,6 +55,7 @@ const C = {
             scale: "1",
             unit: "",
             enableCopyTool: "false",
+            enableFullscreenTool: "false",
         },
     },
 } as const;
@@ -244,6 +245,7 @@ class SubControl {
         ...C.map.default,
         defaultZoom: C.map.default.minZoom,
         src: "",
+        enableFullscreenTool: "false",
     };
     private _isSelected: boolean = false;
     get isSelected(): boolean {

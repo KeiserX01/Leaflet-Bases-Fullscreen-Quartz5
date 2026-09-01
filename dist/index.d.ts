@@ -13,6 +13,7 @@ interface LeafletMapViewConfig {
 }
 interface LeafletMapPluginOptions {
     enableCopyTool?: boolean;
+    enableFullscreenTool?: boolean;
 }
 interface MarkerData {
     mapName?: string;
