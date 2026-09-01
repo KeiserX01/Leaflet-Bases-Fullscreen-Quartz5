@@ -112,18 +112,34 @@ async function loadDependencies(): Promise<void> {
         ]);
     }
     // Leaflet.fullscreen attaches L.control.fullscreen onto the global L namespace.
-    // Detect by checking for the control method, then load JS + CSS from CDN.
+    // We must check AFTER Leaflet is loaded above, otherwise the property access
+    // would throw a ReferenceError. We also avoid optional chaining on `L` itself
+    // to stay safe even if the bundler minifies this into a single expression.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const leafletWithFullscreen = L as typeof L & { control?: { fullscreen?: unknown } };
-    if (typeof leafletWithFullscreen.control?.fullscreen === "undefined") {
-        await loadCss([
-            "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.css",
-            "https://unpkg.com/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.css",
-        ]);
-        await loadScript([
-            "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.js",
-            "https://unpkg.com/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.js",
-        ]);
+    const leafletGlobal = (window as any).L as typeof L | undefined;
+    const hasFullscreenControl =
+        !!leafletGlobal &&
+        !!leafletGlobal.control &&
+        typeof (leafletGlobal.control as { fullscreen?: unknown }).fullscreen !== "undefined";
+    if (!hasFullscreenControl) {
+        try {
+            await loadCss([
+                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.css",
+                "https://unpkg.com/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.css",
+            ]);
+        } catch (err) {
+            console.error("[leaflet-map] Failed to load leaflet.fullscreen CSS:", err);
+            throw err;
+        }
+        try {
+            await loadScript([
+                "https://cdn.jsdelivr.net/npm/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.js",
+                "https://unpkg.com/leaflet.fullscreen@2.4.0/dist/Control.FullScreen.js",
+            ]);
+        } catch (err) {
+            console.error("[leaflet-map] Failed to load leaflet.fullscreen JS:", err);
+            throw err;
+        }
     }
 }
 

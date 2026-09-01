@@ -32,10 +32,10 @@ plugins:
 
 #### Plugin Options
 
-| Option                 | Type    | Default | Description                                                            |
-| ---------------------- | ------- | ------- | ---------------------------------------------------------------------- |
-| enableCopyTool         | boolean | `false` | Enables the copy tool from the Obsidian Leaflet Bases plugin.          |
-| enableFullscreenTool   | boolean | `true`  | Enables the fullscreen button on the map (mirrors the Obsidian plugin). |
+| Option               | Type    | Default | Description                                                             |
+| -------------------- | ------- | ------- | ----------------------------------------------------------------------- |
+| enableCopyTool       | boolean | `false` | Enables the copy tool from the Obsidian Leaflet Bases plugin.           |
+| enableFullscreenTool | boolean | `true`  | Enables the fullscreen button on the map (mirrors the Obsidian plugin). |
 
 ### Quartz v4
 
