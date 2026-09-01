@@ -95,9 +95,9 @@
     "allowScripts": {
         "@parcel/watcher@2.5.6": true,
         "fsevents@2.3.3": true,
-        "esbuild@0.27.2": true
+        "esbuild": false
     },
     "dependencies": {
-        "esbuild": "^0.25.6"
+        "esbuild": "^0.25.7"
     }
 }
